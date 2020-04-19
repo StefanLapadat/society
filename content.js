@@ -10,9 +10,19 @@ function deepCopy(simpleObj){
     return JSON.parse(JSON.stringify(simpleObj));
 }
 
+function randomAcceleration(module){
+    fi = Math.random() * 2 * Math.PI;
+
+    return {
+        x: module * Math.cos(fi),
+        y: module * Math.sin(fi)
+    };
+}
+
 var numberOfHumans = 5;
 var controlledHumanIndex = 0;
 var controlledHuman = null;
+var accelearionModule = 3;
 
 playground = {
     width: 1331,
@@ -34,15 +44,26 @@ playground = {
         return effectiveCoreObjMoveIntention;
     },
     calculateSnapshotFor: function(object){
-        nearHumans = this.objects.filter(a => a.type == 'human' && Math.hypot(
+        var nearHumans = this.objects.filter(a => a.type == 'human' && Math.hypot(
             a.physicalProperties.position.x - object.physicalProperties.position.x,
             a.physicalProperties.position.y - object.physicalProperties.position.y ) < 50);
         
-        nearFood = this.objects.filter(a => a.type == 'food' && Math.hypot(
+        var nearFood = this.objects.filter(a => a.type == 'food' && Math.hypot(
             a.physicalProperties.position.x - object.physicalProperties.position.x,
             a.physicalProperties.position.y - object.physicalProperties.position.y ) < 50);
+        
+        var walls = [];
 
-        return {humans: nearHumans.map(a => a.coreObject), food: nearFood.map(a => ({x: a.physicalProperties.position.x, y: a.physicalProperties.position.y}))};
+        if(Math.abs(object.physicalProperties.position.x - playground.width) < 40) walls.push(['right', Math.abs(object.physicalProperties.position.x - playground.width)]);
+        if(Math.abs(object.physicalProperties.position.x) < 40) walls.push(['left', Math.abs(object.physicalProperties.position.x)]);
+        if(Math.abs(object.physicalProperties.position.y - playground.height) < 40) walls.push(['down', Math.abs(object.physicalProperties.position.y - playground.height)]);
+        if(Math.abs(object.physicalProperties.position.y) < 40) walls.push(['up', Math.abs(object.physicalProperties.position.y)]);
+
+        return {
+                humans: nearHumans.map(a => a.coreObject),
+                food: nearFood.map(a => ({x: a.physicalProperties.position.x, y: a.physicalProperties.position.y})),
+                walls: walls
+            };
     },
     update: function(){
         this.objects.filter(a => a.type == 'human').forEach(a => {
@@ -67,12 +88,14 @@ playground = {
             if(coreObjPhysicalProperties.position.y < 0) coreObjPhysicalProperties.velocity.y = Math.abs(coreObjPhysicalProperties.velocity.y);
             if(coreObjPhysicalProperties.position.y > this.height) coreObjPhysicalProperties.velocity.y = -Math.abs(coreObjPhysicalProperties.velocity.y);
 
+
             if(coreObject.foodIntention && this.objects.some(b =>   b.type === 'food' && 
                                         b.physicalProperties.position.x === coreObject.foodIntention.x &&
                                         b.physicalProperties.position.y === coreObject.foodIntention.y)){
                                             coreObjPhysicalProperties.energy+=1;
                                             this.foodProducer.removeOnCoordinates(coreObject.foodIntention.x, coreObject.foodIntention.y);
                                         }
+
             coreObjPhysicalProperties.energy -= 0.05;
             a.physicalProperties = coreObjPhysicalProperties;
 
@@ -271,7 +294,9 @@ function addHumansToPlayground(playground){
             if(this.desireToStopMoving){
                 this.moveIntention.acceleration = {x: -this.physicalProperties.velocity.x / 5, y: -this.physicalProperties.velocity.y / 5} }
             if(this.desireToStartMoving){
-                this.moveIntention.acceleration = {x: Math.random() * 0.3 - 0.15, y: Math.random() * 0.3 - 0.15}}
+                this.moveIntention.acceleration = randomAcceleration(accelearionModule);
+                this.desireToStartMoving = false;
+            }
         },
         handleFood: function(){
             if(this.environmentSnapshots[this.environmentSnapshots.length - 1].food.length > 0){
@@ -279,11 +304,22 @@ function addHumansToPlayground(playground){
                     x: this.environmentSnapshots[this.environmentSnapshots.length - 1].food[0].x,
                     y: this.environmentSnapshots[this.environmentSnapshots.length - 1].food[0].y,
                 }
-            }else {
+            } else {
                 this.foodIntention = null;
             }
         },
+        handleWalls: function(){
+            if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'left'))
+                this.moveIntention.acceleration.x = Math.abs(this.moveIntention.acceleration.x);
+            if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'right'))
+                this.moveIntention.acceleration.x = -Math.abs(this.moveIntention.acceleration.x);
+            if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'up'))
+                this.moveIntention.acceleration.y = Math.abs(this.moveIntention.acceleration.y);
+            if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'down'))
+                this.moveIntention.acceleration.y = -Math.abs(this.moveIntention.acceleration.y);
+        },
         update: function(){
+            this.handleWalls();
             this.handleConversation();
             this.handleFood();
         },
@@ -323,10 +359,7 @@ function addHumansToPlayground(playground){
         a.moveIntention = {};
         a.lastStopTime = null;
         a.lastStopTime = 0;
-        a.moveIntention.acceleration = {
-            x: Math.random() * 0.05,
-            y: Math.random() * 0.05
-        };
+        a.moveIntention.acceleration = randomAcceleration(accelearionModule);
         a.environmentSnapshots = [];
 
     });
@@ -386,7 +419,7 @@ $(document).ready(function(){
 
         2) What is learned and what is given? That is really important question.
 
-    So ok, again, I would love to train these people so that they can make smart decissions on where to search for food. So, given the same starting positions and the same 'visual systems', some strategies of finding food are better than others. I would like to try and find some of the better strategies and I would also like to try and generalize found procedures. 
+    So ok, again, I would love to train these people so that they can make smart decisions on where to search for food. So, given the same starting positions and the same 'visual systems', some strategies of finding food are better than others. I would like to try and find some of the better strategies and I would also like to try and generalize found procedures. 
     
 
 
