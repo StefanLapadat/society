@@ -321,7 +321,7 @@ function addHumansToPlayground(playground){
         update: function(){
             this.handleWalls();
             this.handleConversation();
-            this.handleFood();
+            this.handleFood(); 
         },
         status: null,
         start: function(){
@@ -415,11 +415,11 @@ $(document).ready(function(){
     
     TODO 2: Implement food in the playground and energy of the human. Maybe think about human mass and different qualities of food - lowering the level of abstraction. So, when you see a human that has a lot of energy, you could perhaps think that he has recently been somewhere where there's some food? Am I right? I guess so. BUT, BUT, BUT! What we absolutely have to avoid is directly coding into the program something like 'If you see someone with a big smile on his face, then, go around this area and search for food'. It should be more dynamic, more statistically oriented, like this: 'try to find events that are statistically corelated with finding of food; If you happen to find that bumping into an energized person is statistically linked to finding food, then you should more intensively search the area around the place where you see energized person'. Or, maybe even better 'If you find that there is a correlation between energized persons and food proximity, you should just follow that person, because it means that that person is good at finding food.' Now the questions arise: 
 
-        1) How and when is the correlation between different events generated? Is it given before runtime or is it only collected at runtime, or is it both? And is it constantly updated during the life of an agent, or is there some point in time where we say, ok - now that's it, we're done with learning this thingy. 
+        1) How and when is the correlation between different events generated? Is it given before runtime or is it only collected at runtime, or is it both? And is it constantly updated during the life of an agent, or is there some point in time where we say, ok - now that's it, we're done with learning this thingy.
 
         2) What is learned and what is given? That is really important question.
 
-    So ok, again, I would love to train these people so that they can make smart decisions on where to search for food. So, given the same starting positions and the same 'visual systems', some strategies of finding food are better than others. I would like to try and find some of the better strategies and I would also like to try and generalize found procedures. 
+    So ok, again, I would love to train these people so that they can make smart decisions on where to search for food. So, given the same starting positions and the same 'visual systems', some strategies of finding food are better than others. I would like to try and find some of the better strategies and I would also like to try and generalize found procedures.
     
 
 
