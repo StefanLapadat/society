@@ -1,4 +1,6 @@
 let $ = require("jquery");
+let fs = require('fs');
+
 
 // let HumanGenome = require('./src/HumanGenome');
 let Canvas = require('./src/Canvas');
@@ -24,9 +26,15 @@ let canvas = null;
 
 function main(){
     $(document).ready(function(){
-        field = new Field(1331, 443, 5, 4, 1000, 1000, 40);
-        foodProducer = new FoodProducer(field, 2, 150);
-        canvas = new Canvas(field, 40);
+        let rawdata = fs.readFileSync('./src/appconfig.json');
+        let config = JSON.parse(rawdata);
+        
+        field = new Field(config.field.width, config.field.height, config.field.maxHumanVelocity, config.field.maxHumanAcceleration,
+             config.field.maxPortionAge, config.field.maxHumanAge, config.field.updatePeriod
+            );
+        foodProducer = new FoodProducer(field, config.foodProducer.meanNumOfPortionsPerPeriod, config.foodProducer.updatePeriod);
+        canvas = new Canvas(field, config.canvas.updatePeriod);
+        
         // humanSpecificCanvas = new HumanSpecificCanvas(field, 40, controlledHuman);
 
         addHumansToPlayground(field);

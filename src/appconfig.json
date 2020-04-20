@@ -1,0 +1,18 @@
+{
+    "field": {
+        "width": 1331,
+        "height": 443, 
+        "maxHumanVelocity":5, 
+        "maxHumanAcceleration":4, 
+        "maxPortionAge":1000, 
+        "maxHumanAge":1000,
+        "updatePeriod":40
+    },
+    "foodProducer":{
+        "meanNumOfPortionsPerPeriod": 2,
+        "updatePeriod": 150
+    },
+    "canvas": {
+        "updatePeriod": 40
+    }
+}
