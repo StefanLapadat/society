@@ -17,7 +17,6 @@ class Human{
                 y: 0
             }
         };
-        this.age = 0;
         this.stayingStatus = null;
         this.moveIntention = {};
         this.lastStopTime = null;
@@ -31,12 +30,35 @@ class Human{
         this.updatePeriod = 40;
     }
 
-    setPhysicalProperties(physicalProperties){
-        this.physicalProperties = physicalProperties;
+    start(){
+        let that = this;
+        this.stopTicket = setInterval(function(){
+            that.update();
+        }, this.updatePeriod)
+        this.status = 'running';
     }
 
-    addEnvironmentSnapshot(snapshot){
-        this.environmentSnapshots.push(snapshot);
+    stop(){
+        clearInterval(this.stopTicket);
+        this.status = 'stopped';
+    }
+
+    update(){
+        this.handleWalls();
+        this.handleConversation();
+        this.handleFood();
+        this.handleMating();
+    }
+
+    handleWalls(){
+        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'left'))
+            this.moveIntention.acceleration.x = Math.abs(this.moveIntention.acceleration.x);
+        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'right'))
+            this.moveIntention.acceleration.x = -Math.abs(this.moveIntention.acceleration.x);
+        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'up'))
+            this.moveIntention.acceleration.y = Math.abs(this.moveIntention.acceleration.y);
+        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'down'))
+            this.moveIntention.acceleration.y = -Math.abs(this.moveIntention.acceleration.y);
     }
 
     handleConversation(){
@@ -64,34 +86,16 @@ class Human{
         }
     }
 
-    handleWalls(){
-        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'left'))
-            this.moveIntention.acceleration.x = Math.abs(this.moveIntention.acceleration.x);
-        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'right'))
-            this.moveIntention.acceleration.x = -Math.abs(this.moveIntention.acceleration.x);
-        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'up'))
-            this.moveIntention.acceleration.y = Math.abs(this.moveIntention.acceleration.y);
-        if(this.environmentSnapshots[this.environmentSnapshots.length - 1].walls.some(a => a[0] == 'down'))
-            this.moveIntention.acceleration.y = -Math.abs(this.moveIntention.acceleration.y);
+    handleMating(){
+        
     }
 
-    update(){
-        this.handleWalls();
-        this.handleConversation();
-        this.handleFood(); 
+    setPhysicalProperties(physicalProperties){
+        this.physicalProperties = physicalProperties;
     }
 
-    start(){
-        this.status = 'running';
-        let that = this;
-        this.stopTicket = setInterval(function(){
-            that.update();
-        }, this.updatePeriod)
-    }
-
-    stop(){
-        clearInterval(this.stopTicket);
-        this.status = 'stopped';
+    addEnvironmentSnapshot(snapshot){
+        this.environmentSnapshots.push(snapshot);
     }
 }
 

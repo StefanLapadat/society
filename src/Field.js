@@ -68,6 +68,7 @@ class Field{
         this.incrementAgeOnAllObjects();
         this.killOldAndWeak();
         let that = this;
+        
         this.objects.filter(a => a.type == 'human').forEach(a => {
             let coreObject = a.coreObject;
             

@@ -26,15 +26,14 @@ let canvas = null;
 
 function main(){
     $(document).ready(function(){
-        let rawdata = fs.readFileSync('./src/appconfig.json');
-        let config = JSON.parse(rawdata);
+        let config = JSON.parse(fs.readFileSync('./src/appconfig.json'));
         
         field = new Field(config.field.width, config.field.height, config.field.maxHumanVelocity, config.field.maxHumanAcceleration,
              config.field.maxPortionAge, config.field.maxHumanAge, config.field.updatePeriod
             );
         foodProducer = new FoodProducer(field, config.foodProducer.meanNumOfPortionsPerPeriod, config.foodProducer.updatePeriod);
         canvas = new Canvas(field, config.canvas.updatePeriod);
-        
+
         // humanSpecificCanvas = new HumanSpecificCanvas(field, 40, controlledHuman);
 
         addHumansToPlayground(field);
