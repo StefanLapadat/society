@@ -23,6 +23,7 @@ var numberOfHumans = 5;
 var controlledHumanIndex = 0;
 var controlledHuman = null;
 var accelearionModule = 3;
+var livenessTreshold = 0;
 
 playground = {
     width: 1331,
@@ -272,6 +273,15 @@ function init(){
     foodProducer.start();
 }
 
+class HumanGenome{
+
+    static mix(a, b) {
+        var res = new HumanGenome();
+        
+        return res;
+      }
+}
+
 function addHumansToPlayground(playground){
     var human = {
         playground: playground,
@@ -438,3 +448,13 @@ $(document).ready(function(){
 
     Comment 2: I think that the right strategy for playing this game strongly depends on all the parameters of the game. The playground dimension, number of humans in the game, frequency with which we generate and remove food from the playground, can humans fight for the teritory, do humans know coordinates of themselves (i.e. how good is their orientation in space), how much do they see around themselves etc. All in all, strategy for playing the game depends on the rules of the game :D 
 */
+
+/*
+    So, what do we want in this implementation? Well, we want those who have low energy to die.. That is one thing.
+    Another thing is that we want to measure the successfullness of individuals so that we can keep track over the course of time, how we are improving.
+    We also very much want simulation to keep going - that is, we want some people to remain alive. So, we will put plenty of food on the field, but not too much, because, someone has to die and leave place for more efficient to live :( :) 
+    But we also don't want too much people to overcrowd the field. So, mating will be done only if there aren't too many individuals on the field.
+
+    And each human needs to have a genetic sequence that represents his strategy for playing the game. 
+*/
+
